@@ -5,6 +5,8 @@ from django.shortcuts import render
 from .cart import Cart
 
 from product.models import Product
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 
 def add_to_cart(request, product_id):
     cart = Cart(request)
@@ -18,38 +20,43 @@ def cart(request):
 def success(request):
     return render(request, 'cart/success.html')
 
+
+
 def update_cart(request, product_id, action):
     cart = Cart(request)
+    product = get_object_or_404(Product, pk=product_id)
 
     if action == 'increment':
         cart.add(product_id, 1, True)
-    else:
+    elif action == 'decrement':
         cart.add(product_id, -1, True)
-    
-    product = Product.objects.get(pk=product_id)
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid action'}, status=400)
+
     quantity = cart.get_item(product_id)
     
     if quantity:
         quantity = quantity['quantity']
+        total_price = (quantity * product.price) / 100
 
         item = {
             'product': {
                 'id': product.id,
                 'name': product.name,
-                'image': product.image,
+                'image': product.image.url,
                 'get_thumbnail': product.get_thumbnail(),
                 'price': product.price,
             },
-            'total_price': (quantity * product.price) / 100,
+            'total_price': total_price,
             'quantity': quantity,
         }
     else:
         item = None
 
-    response = render(request, 'cart/partials/cart_item.html', {'item': item})
-    response['HX-Trigger'] = 'update-menu-cart'
+    return JsonResponse({
+        'item': item
+    })
 
-    return response
 
 @login_required
 def checkout(request):
