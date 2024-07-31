@@ -1,10 +1,10 @@
-# ComfyUndies 
+# ComfyUndies
 
 ComfyUndies is a full-stack e-commerce website that was developed as my 4th and final milestone project for the Level 5 Diploma in Web Development with Code Institute. Built using Django, Python, HTML and CSS, the website allows the user to browse and purchase underwear, using Stripe integration for secure payments.
 
 [View website here](https://ms-4.onrender.com/)
 
-# User Experience 
+## User Experience
 
 ## Project Goals
 
